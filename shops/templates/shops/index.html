@@ -1,0 +1,188 @@
+
+{% load leaflet_tags %}
+{% load pwa %}
+<html>
+  <head>
+    {% leaflet_js %}
+    {% leaflet_css %}
+      {% progressive_web_app_meta %}
+      <script src="https://unpkg.com/pouchdb@^5.2.0/dist/pouchdb.js"></script>
+
+    <style>
+       body { margin:0; padding:0; }
+  #map { position:absolute;
+      top:15%;
+      bottom:1%;
+      width:99%;
+      border : 10px solid black;
+  }
+  #LocalShops{
+
+      display:none;
+  }
+
+  #ShopNames{
+
+      display:none;
+  }
+
+
+       H1 {text-align:center;
+    font-family: Impact, Charcoal, sans-serif;
+    font-size: 30px;
+    letter-spacing: -0.6px;
+    word-spacing: 2px;
+    color: #000000;
+    font-weight: normal;
+    text-decoration: none;
+    font-style: italic;
+    font-variant: small-caps;
+    text-transform: none;
+       padding-top: 20px;}
+
+
+    </style>
+      <h1>Nearby Shops</h1>
+    {% if shops %}
+    <ul id = "LocalShops">
+    {% for shop in shops %}
+
+        <li >
+            {{ shop.location }}
+        </li>
+    {% endfor %}
+    <!--{{ shop.name }}: {{shop.distance}}: {{shop.location}}-->
+    </ul>
+
+        <ul id = "ShopNames">
+    {% for shop in shops %}
+
+        <li >
+            {{ shop.name }}
+        </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+<div id='map'></div>
+    <script type="text/javascript">
+
+
+
+        getLocation();
+
+        function getLocation() {
+    if(navigator.geolocation) {
+navigator.geolocation.getCurrentPosition(geoSuccess);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+
+
+
+var map = L.map('map').setView([53.337154899999994, -6.2674277], 12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+   function geoSuccess(position) {
+            localStorage['longitude'] = position.coords.longitude;
+            localStorage['latitude'] = position.coords.latitude;
+    //var lat = localStorage['latitude'];
+    //var lng = localStorage['longitude'] ;
+
+        var lat = 53.337154899999994;
+        var lng = -6.2674277;
+ //  alert("lat:" + lat + " lng:" + lng);
+
+        //L.marker([lat, lng]).addTo(map)
+
+
+
+    var circle = L.circle([lat, lng], {
+	color: 'red',
+	fillColor: '#f03',
+	fillOpacity: 0.5,
+	radius: 30
+}).addTo(map)
+    .bindPopup('This is your location')
+        .openPopup();
+
+
+
+   var ul = document.getElementById("LocalShops");
+   var items = ul.getElementsByTagName("li");
+   var ul2 = document.getElementById("ShopNames");
+   var items2 = ul.getElementsByTagName("li");
+
+       var distance;
+        for (var i = 0; i < items.length; ++i) {
+
+            // do something with items[i], which is a <li> element
+
+            var li = document.getElementById('LocalShops');
+            var a = li.getElementsByTagName('li');
+            var li2 = document.getElementById('ShopNames');
+            var a2 = li2.getElementsByTagName('li');
+
+
+                var str = a[i].innerHTML;
+  var res = str.slice(30, -13);
+
+
+  var res1 = res.split(" ");
+
+
+            var longitude = res1[0];
+            var latitude = res1[1];
+            //alert("lat:" + latitude  + " lng:" + longitude);
+            //alert("lat:" + latitude  + " lng:vljvk" + longitude);
+            distance = getDistanceFromLatLonInKm(lat,lng,latitude,longitude);
+            //alert("The Distance is " + distance + " km" );
+
+            if (distance < 1)
+            {
+                 var circle2 = L.circle([latitude, longitude], {
+	color: '#44dbff',
+	fillColor: '#fe26ff',
+	fillOpacity: 0.5,
+	radius: 5
+}).addTo(map).
+                //L.marker([latitude, longitude]).addTo(map).
+                bindPopup(a2[i].innerHTML);
+            }
+
+
+        }
+        }
+
+        function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+
+  var R = 6371; // Radius of the earth in km
+  var dLat = deg2rad(lat2-lat1);  // deg2rad below
+  var dLon = deg2rad(lon2-lon1);
+  var a =
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+    ;
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+   // Distance in km
+            return R * c;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI/180)
+}
+
+
+
+    </script>
+
+  </head>
+  <body>
+
+
+  </body>
+</html>
