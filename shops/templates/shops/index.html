@@ -87,13 +87,13 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
    function geoSuccess(position) {
-            localStorage['longitude'] = position.coords.longitude;
-            localStorage['latitude'] = position.coords.latitude;
-    //var lat = localStorage['latitude'];
-    //var lng = localStorage['longitude'] ;
+             //localStorage['longitude'] = position.coords.longitude;
+           // localStorage['latitude'] = position.coords.latitude;
+    var lat = position.coords.latitude;
+    var lng = position.coords.longitude;
 
-        var lat = 53.337154899999994;
-        var lng = -6.2674277;
+       // var lat = 53.337154899999994;
+       // var lng = -6.2674277;
  //  alert("lat:" + lat + " lng:" + lng);
 
         //L.marker([lat, lng]).addTo(map)
